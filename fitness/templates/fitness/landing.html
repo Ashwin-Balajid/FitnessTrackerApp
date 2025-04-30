@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Platform</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url("{% static 'heroImage.png' %}")  no-repeat center center/cover;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: white;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2em;
+            color: white;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #367c39;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-side" style="background-image: url('{% static "images/heroImage.png" %}');"></div>
+
+        <h1>Welcome to Our Fitness Platform</h1>
+        <p>Track your workouts, set goals, and achieve your fitness dreams.</p>
+        <a href="signup"><button class="btn">Sign Up</button></a>
+        <a href="signin"><button class="btn">Sign In</button></a>
+    </div>
+</body>
+</html>

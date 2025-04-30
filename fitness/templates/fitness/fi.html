@@ -1,0 +1,534 @@
+
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        header nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        header nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Left (Forms) | Right (Charts) */
+            grid-template-rows: auto auto auto;
+            gap: 30px;
+            width: 90%;
+            max-width: 1300px;
+            align-items: start;
+        }
+
+        /* Sections */
+        .section {
+            width: 100%;
+            max-width: 500px;
+            padding: 1.5rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-height: 200px;
+            /* Ensures equal height */
+        }
+
+        /* Left Side - Forms */
+        #workout-section {
+            grid-column: 1;
+            grid-row: 1;
+            max-width: 500px;
+            min-height: 220px;
+        }
+
+        #calories-section {
+            grid-column: 1;
+            grid-row: 2;
+            max-width: 500px;
+            min-height: 250px;
+        }
+
+        #bmi-section {
+            grid-column: 1;
+            grid-row: 3;
+            max-width: 500px;
+            min-height: 250px;
+            
+        }
+
+        #goal-section {
+            grid-column: 2;
+            grid-row: 3;
+            min-height: 350px;
+            width: 100%;
+            /* ensure full width of the grid column */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+
+
+
+
+        /* Right Side - Progress Charts */
+        #progress-section-workout {
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 220px;
+            max-width: 500px;
+            /* Same height as forms */
+        }
+
+        #progress-section-calories {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px;
+            max-width: 500px;
+            /* Same height as forms */
+        }
+
+        /* Section Headings */
+        .section h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Forms */
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: left;
+            color: #555;
+        }
+
+        form input,
+        form select {
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        form button {
+            padding: 10px;
+            margin-top: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        .form-group {
+            display: flex;
+            margin-top: 10px;
+            align-items: center;
+            gap: 10px;
+            /* Adds spacing between label and select dropdown */
+        }
+
+        .form-group label {
+            font-weight: bold;
+            white-space: nowrap;
+            margin-top: 10px;
+            /* Prevents label from breaking into a new line */
+        }
+
+        #workout-name {
+            flex-grow: 1;
+            /* Makes the dropdown take up remaining space */
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+
+        /* Chart Canvas */
+        canvas {
+            width: 100%;
+            max-width: 450px;
+            height: 220px;
+        }
+
+        /* Ensure Equal Width for Forms & Charts */
+        #progress-section-workout,
+        #progress-section-calories {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .section,
+        .progress-section {
+            width: 90%;
+            /* Same width for both forms and charts */
+            max-width: 600px;
+            /* Ensure they don't exceed form size */
+            padding: 1.5rem;
+            /* Increase padding for better spacing */
+            height: auto;
+            /* Adjust height dynamically */
+            min-height: 250px;
+            /* Ensure consistency in height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-section canvas {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 500px;
+            /* Adjust width to match form */
+            max-height: 250px;
+            /* Ensure consistent height */
+        }
+    
+        
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Fitness Tracker</h1>
+        <nav>
+            <ul>
+                <li><a href="#workout-section">Daily Workouts</a></li>
+                <li><a href="#calories-section">Calories Tracker</a></li>
+                <li><a href="#bmi-section">BMI Calculator</a></li>
+                <li><a href="#goal-section">Fitness Goal</a></li>
+                <li><a href="#progress-section-workout">Progress Over Workouts</a></li>
+                <li><a href="#progress-section-calories">Progress Over Calories</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main id="full">
+        <div class="container">
+            <!-- Workout Section -->
+            <div class="section" id="workout-section">
+                <h2>Daily Workouts</h2>
+                <form id="workout-form" method="POST">
+                    {% csrf_token %}
+                    {{ workout_form.as_p }}
+                    <button type="submit" name="workout_submit">Add Workout</button>
+                </form>
+                <p><strong>Total Workouts:</strong> <span id="total-workouts"> {{ total_workouts }}</span></p>
+            </div>
+    
+            <!-- Calories Section -->
+            <div class="section" id="calories-section">
+                <h2>Calories Tracker</h2>
+                <form id="calories-form" method="POST">
+                    {% csrf_token %}
+                    {{ calorie_form.as_p }}
+                    <button type="submit" name="calorie_submit">Add Calories</button>
+                </form>
+                <p><strong>Total Calories Burned:</strong> <span id="total-calories">{{ total_calories }}</span></p>
+
+            </div>
+    
+            <!-- BMI Section -->
+            <div class="section" id="bmi-section">
+                <h2>BMI Calculator</h2>
+                <form id="bmi-form" method="POST">
+                    {% csrf_token %}
+                    {{ bmi_form.as_p }}
+                    <button type="submit" name="bmi_submit">Calculate BMI</button>
+                </form>
+                <p id="bmi-result">{% if bmi %}Your BMI: <span>{{ bmi }}</span>{% endif %}</p>
+            </div>
+    
+            <!-- Goal Section -->
+            <div class="section" id="goal-section">
+                <h2>Fitness Goal</h2>
+                <form id="goal-form" method="POST">
+                    {% csrf_token %}
+                    {{ goal_form.as_p }}
+                    <button type="submit" name="goal_submit">Save Goal</button>
+                </form>
+                <p><strong>Goal:</strong> <span>{{ user_goal }}</span></p>
+            </div>
+    
+            <!-- Workout Progress Chart -->
+            <div class="section" id="progress-section-workout">
+                <h2>Progress Over Workout</h2>
+                <canvas id="progressChart"></canvas>
+            </div>
+    
+            <!-- Calories Progress Chart -->
+            <div class="section" id="progress-section-calories">
+                <h2>Progress Over Calories</h2>
+                <canvas id="calorieChart"></canvas>
+            </div>
+        </div>
+    </main>
+    
+
+    <script>
+    
+            document.addEventListener("DOMContentLoaded", function () {
+                let totalWorkouts = parseInt(document.getElementById("total-workouts").innerText) || 0;
+                let totalCalories = parseInt(document.getElementById("total-calories").innerText) || 0;
+            
+                let weeklyWorkouts = [0, 0, 0, 0];
+                let weeklyCalories = [0, 0, 0, 0];
+            
+                // Utility: Get week index (0–3) from a date string
+                function getWeekIndexFromDate(dateStr) {
+                    const date = new Date(dateStr);
+                    const day = date.getDate();
+                    if (day >= 1 && day <= 7) return 0;
+                    if (day >= 8 && day <= 14) return 1;
+                    if (day >= 15 && day <= 21) return 2;
+                    return 3; // 22nd to end of month
+                }
+            
+                // Workout Chart
+                const workoutChart = new Chart(document.getElementById("progressChart"), {
+                    type: "bar",
+                    data: {
+                        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                        datasets: [{
+                            label: "Workouts Completed",
+                            data: weeklyWorkouts,
+                            backgroundColor: "rgba(54, 162, 235, 0.6)"
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            
+                // Calorie Chart
+                const calorieChart = new Chart(document.getElementById("calorieChart"), {
+                    type: "line",
+                    data: {
+                        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                        datasets: [{
+                            label: "Calories Burned",
+                            data: weeklyCalories,
+                            borderColor: "rgba(255, 99, 132, 1)",
+                            backgroundColor: "rgba(255, 99, 132, 0.2)",
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            
+                function updateWorkoutChart() {
+                    workoutChart.update();
+                }
+            
+                function updateCalorieChart() {
+                    calorieChart.update();
+                }
+            
+                // Workout form handler
+                document.getElementById("workout-form").addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    const dateStr = document.getElementById("workout-date").value;
+                    if (!dateStr) return alert("Please select a workout date.");
+                    const weekIndex = getWeekIndexFromDate(dateStr);
+                    weeklyWorkouts[weekIndex]++;
+                    totalWorkouts++;
+                    document.getElementById("total-workouts").innerText = totalWorkouts;
+                    updateWorkoutChart();
+                    this.reset();
+                });
+            
+                // Calorie form handler
+                document.getElementById("calories-form").addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    const calorieInput = document.getElementById("calories-burned").value;
+                    const dateStr = document.getElementById("calorie-date").value;
+            
+                    const calories = parseInt(calorieInput);
+                    if (!dateStr) return alert("Please select a calorie date.");
+                    if (isNaN(calories) || calories <= 0) return alert("Please enter a valid calorie amount.");
+            
+                    const weekIndex = getWeekIndexFromDate(dateStr);
+                    weeklyCalories[weekIndex] += calories;
+                    totalCalories += calories;
+                    document.getElementById("total-calories").innerText = totalCalories;
+                    updateCalorieChart();
+                    this.reset();
+                });
+            
+                // BMI form handler
+                document.getElementById("bmi-form").addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    let weight = parseFloat(document.getElementById("weight").value);
+                    let height = parseFloat(document.getElementById("height").value);
+                    if (weight > 0 && height > 0) {
+                        let bmi = (weight / (height * height)).toFixed(2);
+                        let result = `Your BMI is: ${bmi} - `;
+                        if (bmi < 18.5) result += "Underweight";
+                        else if (bmi <= 24.9) result += "Normal weight";
+                        else if (bmi <= 29.9) result += "Overweight";
+                        else result += "Obese";
+                        document.getElementById("bmi-result").innerText = result;
+                    } else {
+                        alert("Please enter valid weight and height.");
+                    }
+                });
+
+                document.getElementById("goal-section").querySelector("form").addEventListener("submit", function (event) {
+                    event.preventDefault(); // Prevent default form submission
+                
+                    const goalInput = document.getElementById("goal-description");
+                    const goalText = goalInput.value.trim();
+                
+                    if (goalText.length === 0) {
+                        alert("Please enter a fitness goal.");
+                        return;
+                    }
+                
+                    // Display the goal instantly in the UI
+                    const goalDisplay = document.querySelector("#goal-section span");
+                    goalDisplay.innerText = goalText;
+                
+                    // Optionally: Send to backend using fetch() for persistence
+                    fetch(window.location.href, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: new URLSearchParams({
+                            goal_description: goalText,
+                            goal_submit: "true"
+                        })
+                    }).then(response => {
+                        if (!response.ok) {
+                            alert("Failed to save goal. Please try again.");
+                        }
+                    });
+                
+                    // Clear input
+                    goalInput.value = "";
+                });
+                
+            });
+            
+    </script>
+
+<!-- Real Chart Data Rendering -->
+<script>
+    const workoutData = JSON.parse('{{ workout_chart_data|safe }}');
+    const calorieData = JSON.parse('{{ calorie_chart_data|safe }}');
+
+    const workoutCtx = document.getElementById('progressChart').getContext('2d');
+    new Chart(workoutCtx, {
+        type: 'bar',
+        data: {
+            labels: workoutData.map(item => item.date),
+            datasets: [{
+                label: 'Workouts',
+                data: workoutData.map(item => item.count),
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    const calorieCtx = document.getElementById('calorieChart').getContext('2d');
+    new Chart(calorieCtx, {
+        type: 'line',
+        data: {
+            labels: calorieData.map(item => item.date),
+            datasets: [{
+                label: 'Calories Burned',
+                data: calorieData.map(item => item.total),
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>  
+    
+</body>
+
+</html>
