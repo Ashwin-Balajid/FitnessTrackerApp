@@ -45,7 +45,7 @@ The Fitness Tracker is a Django-based web application that helps users track and
 # 🔧 Installation & Setup
 
 # Step 1: Clone the Repository
-git clone https://github.com/yourusername/fitness-tracker.git
+git clone https://github.com/Ashwin_Balajid/fitness-tracker.git
 cd fitness-tracker
 
 # Step 2: Set Up Virtual Environment
@@ -57,6 +57,7 @@ pip install -r requirements.txt
 
 # Step 4: Database Setup
 Make sure MySQL is running, then update settings.py with your MySQL credentials.
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
